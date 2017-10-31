@@ -26,7 +26,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
     W,
     S;
   }
-	public enum MODE {
+	public enum MODE {	// 状態
 		TITLE,
 		GAME,
 		END,
