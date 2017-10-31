@@ -300,8 +300,8 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
 			/* タイトルバーに表示する文字列を指定できる */
-			JFrame frame = new JFrame("TourDeAji!");
-			frame.add(new TourDeAji());
+			JFrame frame = new JFrame("仮題");	// 決めてください
+			frame.add(new Oct31());
 			frame.pack();
 			frame.setVisible(true);
 			/* ×ボタンを押したときの動作を指定する */
