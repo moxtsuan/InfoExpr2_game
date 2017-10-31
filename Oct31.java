@@ -312,7 +312,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 	}
 
 	public void keyReleased(KeyEvent e) {}
-	public void keyTyped(KeyEvent e) { mode = MODE.THREE; }
+	public void keyTyped(KeyEvent e) { mode = MODE.GAME; }
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
