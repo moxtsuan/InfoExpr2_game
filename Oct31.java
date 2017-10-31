@@ -4,7 +4,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.Graphics2D;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -27,6 +26,13 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
     W,
     S;
   }
+	public enum MODE {
+		TITLE,
+		GAME,
+		THREE,	// アニメーション用
+		TWO,
+		ONE;
+	}
 
   class Point {	// 使いにくいので使ってません
     public int x;
@@ -144,6 +150,8 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 	private int width, height;
 	private int countR, countL;
 	private boolean gameset;	// ゲームセット判定
+	private boolean pause;	// ゲーム開始前のポーズ
+	private MODE mode;
 
 	private void initialize() {
     field.init();
@@ -156,8 +164,10 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 
     block = 4;
     field = new Field(80, 80);
-		gameset = false;
-		message = "Game started!";
+		gameset = true;
+		pause = true;
+		pointmes = "0 vs 0";
+		mode = MODE.TITLE;
 		font = new Font("Monospaced", Font.PLAIN, 12);
 		setFocusable(true);
 		addKeyListener(this);
@@ -185,28 +195,35 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 		// 全体を背景色で塗りつぶす。
 		g.clearRect(0, 0, width, height);
 
-		 // 一旦、別の画像（オフスクリーン）に書き込む
-		int i, j;
-		for (i = 0; i < field.xSize; i++) {
-			for (j = 0; j < field.ySize; j++) {
-				g.setColor(field.getColor(i, j));
-				g.fillRect(i * block, j * block, block, block);
+		if ( mode == MODE.GAME ) {
+			int i, j;
+			for (i = 0; i < field.xSize; i++) {
+				for (j = 0; j < field.ySize; j++) {
+					g.setColor(field.getColor(i, j));
+					g.fillRect(i * block, j * block, block, block);
+				}
 			}
+			g.setFont(font);
+			g.setColor(Color.GREEN.darker());
+			g.drawString(message, 2 * block, block * (field.ySize+3));
+			g.drawString(pointmes, 2 * block, block * (field.ySize+6));
+			g.setColor(Color.RED.darker());
+			g.drawString("Left:  A(L), S(D), D(U), F(R), W(JUMP)", 2 * block, block * (field.ySize + 9));
+			g.setColor(Color.BLUE.darker());
+			g.drawString("Right: H(L), J(D), K(U), L(R), O(JUMP)", 2 * block, block * (field.ySize + 12));
+		} else if ( mode == MODE.TITLE ) {
+			g.setFont(font);
+			g.setColor(Color.GREEN.darker());
+			g.drawString("仮題", (field.xSize / 2) * block, block * (field.ySize / 2));
+			g.drawString("Push any button!", (field.xSize / 2) * block, block * (field.ySize / 2) + 12);
 		}
-		g.setFont(font);
-		g.setColor(Color.GREEN.darker());
-		g.drawString(message, 2 * block, block * (field.ySize+3));
-		g.drawString(pointmes, 2 * block, block * (field.ySize+6));
-		g.setColor(Color.RED.darker());
-		g.drawString("Left:  A(L), S(D), D(U), F(R), W(JUMP)", 2 * block, block * (field.ySize + 9));
-		g.setColor(Color.BLUE.darker());
-		g.drawString("Right: H(L), J(D), K(U), L(R), O(JUMP)", 2 * block, block * (field.ySize + 12));
 	}
 
 	public void run() {
 		Thread thisThread = Thread.currentThread();
 		while (thisThread == thread) {
 			initialize();
+			requestFocus();
 			if ( gameset ) {
 				countR = 0;
 				countL = 0;
@@ -214,8 +231,8 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 				message = "Game started!";
 				repaint();
 			}
-			requestFocus();
-			while (p1.state != State.DEAD && p2.state != State.DEAD) {
+
+			while (mode == MODE.GAME && p1.state != State.DEAD && p2.state != State.DEAD) {
 				int i;
 				p1.update();
 				p2.update();
@@ -295,7 +312,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 	}
 
 	public void keyReleased(KeyEvent e) {}
-	public void keyTyped(KeyEvent e) {}
+	public void keyTyped(KeyEvent e) { mode = MODE.THREE; }
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
