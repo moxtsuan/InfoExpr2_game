@@ -4,31 +4,47 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.Graphics2D;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+import java.applet.*;
+import java.net.*;
+
 public class Oct31 extends JPanel implements Runnable, KeyListener {
 	private static final long serialVersionUID = 1L;
 
-  private static final int JCOUNT = 5;	// ‘Ø‹óŠÔ
-	private static final int matchP = 3;	// ƒZƒbƒgƒ|ƒCƒ“ƒg
+  private static final int JCOUNT = 5;	// ï¿½Ø‹óŠï¿½
+	private static final int matchP = 3;	// ï¿½Zï¿½bï¿½gï¿½|ï¿½Cï¿½ï¿½ï¿½g
 
-  public enum State { // ó‘Ô
-    DEAD,							// Õ“Ë
-    ALIVE,						// ’Êí
-    JUMP;							// ƒWƒƒƒ“ƒv
+  public enum State { // ï¿½ï¿½ï¿½
+    DEAD,							// ï¿½Õ“ï¿½
+    ALIVE,						// ï¿½Êï¿½
+    JUMP;							// ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½v
   }
-  public enum Dir { // •ûŒü
+  public enum Dir { // ï¿½ï¿½ï¿½
+
     N,
     E,
     W,
     S;
   }
+	public enum MODE {	// çŠ¶æ…‹
+		TITLE,
+		GAME,
+		END,
+		THREE,	// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ç”¨
+		TWO,
+		ONE;
+	}
 
-  class Point {	// g‚¢‚É‚­‚¢‚Ì‚Åg‚Á‚Ä‚Ü‚¹‚ñ
+
+  class Point {	// ï¿½gï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½ï¿½Ì‚Ågï¿½ï¿½ï¿½Ä‚Ü‚ï¿½ï¿½ï¿½
     public int x;
     public int y;
     private void Point(int ix, int iy) {
@@ -37,27 +53,27 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
     }
   }
 
-  class Bike {	// ©‹@
-    private State state;	// ó‘Ô
-    public Dir dir;				// •ûŒü
-    protected String jiki;	// ƒ_ƒ~[‚Å‚·
-    protected int px, py; // ‘O‚ÌÀ•W
-    protected int x, y;		// À•W
-    private int jumpcount;	// ‘Ø‹óŠÔ
-    private int speed;		// ƒXƒs[ƒh(‚Ù‚Úƒ_ƒ~[)
+  class Bike {	// ï¿½ï¿½ï¿½@
+    private State state;	// ï¿½ï¿½ï¿½
+    public Dir dir;				// ï¿½ï¿½ï¿½
+    protected String jiki;	// ï¿½_ï¿½~ï¿½[ï¿½Å‚ï¿½
+    protected int px, py; // ï¿½Oï¿½Ìï¿½W
+    protected int x, y;		// ï¿½ï¿½W
+    private int jumpcount;	// ï¿½Ø‹óŠï¿½
+    private int speed;		// ï¿½Xï¿½sï¿½[ï¿½h(ï¿½Ù‚Úƒ_ï¿½~ï¿½[)
 
-    State getState() {	// ó‘Ô‚ğæ“¾
+    State getState() {	// ï¿½ï¿½Ô‚ï¿½æ“¾
       return this.state;
     }
-    void setState(State s) {	// ó‘Ô‚ğƒZƒbƒg
+    void setState(State s) {	// ï¿½ï¿½Ô‚ï¿½Zï¿½bï¿½g
       this.state = s;
     }
-    void jump() {	// ƒWƒƒƒ“ƒv
-      if ( this.state != State.ALIVE ) { return; }	// ’Êíó‘ÔˆÈŠO‚Å‚Í‰½‚à‚µ‚È‚¢
-			this.state = State.JUMP;	// ƒWƒƒƒ“ƒv‚·‚é
-      this.jumpcount = JCOUNT;	// ‘Ø‹óŠÔ‚ğƒZƒbƒg
+    void jump() {	// ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½v
+      if ( this.state != State.ALIVE ) { return; }	// ï¿½Êï¿½ï¿½ÔˆÈŠOï¿½Å‚Í‰ï¿½ï¿½ï¿½ï¿½È‚ï¿½
+			this.state = State.JUMP;	// ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½ï¿½
+      this.jumpcount = JCOUNT;	// ï¿½Ø‹óŠÔ‚ï¿½Zï¿½bï¿½g
     }
-    void update() {	// ‘Ø‹óŠÔ‚ÌŒ¸­
+    void update() {	// ï¿½Ø‹óŠÔ‚ÌŒï¿½ï¿½ï¿½
       if ( this.state == State.JUMP ) {
         this.jumpcount--;
         if ( this.jumpcount <= 0 ) {
@@ -65,8 +81,9 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
         }
       }
     }
-    void move() {	// ˆÚ“®
-			if ( this.state == State.ALIVE ) {	// ƒyƒCƒ“ƒg—p
+
+    void move() {	// ï¿½Ú“ï¿½
+			if ( this.state == State.ALIVE ) {	// ï¿½yï¿½Cï¿½ï¿½ï¿½gï¿½p
       	this.py = this.y; this.px = this.x;
 			}
       switch ( this.dir ) {
@@ -87,7 +104,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 		void brake() {
 			this.speed = 0;
 		}
-    Bike(int ix, int iy, int p) {	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+    Bike(int ix, int iy, int p) {	// ï¿½Rï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^
       this.state = State.ALIVE;
       this.x = ix;  this.px = this.x;
       this.y = iy;	this.py = this.y;
@@ -103,15 +120,15 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
     }
   }
 
-  class Field {	// ƒtƒB[ƒ‹ƒh
-    protected Color map[][];	// F
-    protected int xSize, ySize;	// ƒTƒCƒY
+  class Field {	// ï¿½tï¿½Bï¿½[ï¿½ï¿½ï¿½h
+    protected Color map[][];	// ï¿½F
+    protected int xSize, ySize;	// ï¿½Tï¿½Cï¿½Y
 
-    void init() {	// ‰Šú‰»
+    void init() {	// ï¿½ï¿½ï¿½ï¿½
       int i, j, k;
-      int x, y;	   //áŠQ•¨‚ÌÀ•W
-      int n = 10;	//áŠQ•¨‚Ì”
-      int m = 3;	//áŠQ•¨‚Ì‘å‚«‚³
+      int x, y;	   //ï¿½ï¿½Qï¿½ï¿½ï¿½Ìï¿½W
+      int n = 10;	//ï¿½ï¿½Qï¿½ï¿½ï¿½Ìï¿½
+      int m = 3;	//ï¿½ï¿½Qï¿½ï¿½ï¿½Ì‘å‚«ï¿½ï¿½
       for ( j=0; j<ySize; j++ ) {
         this.map[0][j] = map[xSize-1][j] = Color.BLACK;
       }
@@ -137,7 +154,8 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 		Color getColor(int x, int y) {
 			return map[x][y];
 		}
-    Field(int x, int y) {	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+
+    Field(int x, int y) {	// ï¿½Rï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^
       this.xSize = x;
       this.ySize = y;
       this.map = new Color[x][y];
@@ -154,8 +172,10 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 	private Font font;
 
 	private int width, height;
-	private int countR, countL;
-	private boolean gameset;	// ƒQ[ƒ€ƒZƒbƒg”»’è
+
+	private int countR, countL;	// å¾—ç‚¹
+	private boolean gameset;	// ã‚²ãƒ¼ãƒ ã‚»ãƒƒãƒˆåˆ¤å®š
+	private MODE mode;				// ãƒ¢ãƒ¼ãƒ‰
 
 	private void initialize() {
     field.init();
@@ -164,19 +184,26 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 	}
 
 	public Oct31() {
+
+
 		setPreferredSize(new Dimension(320, 380));
 
     block = 4;
     field = new Field(80, 80);
-		gameset = false;
-		message = "Game started!";
+		gameset = true;
+		pointmes = "0 vs 0";
+		mode = MODE.TITLE;
 		font = new Font("Monospaced", Font.PLAIN, 12);
 		setFocusable(true);
 		addKeyListener(this);
 		Dimension size = getPreferredSize();
 		width = size.width; height = size.height;
 
+		//ï¿½ï¿½ï¿½Ì•Ó‚ï¿½OPï¿½`ï¿½ï¿½
+
 		startThread();
+
+
 	}
 
 	public void startThread() {
@@ -194,40 +221,53 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 
 	@Override
 	public void paintComponent(Graphics g) {
-		// ‘S‘Ì‚ğ”wŒiF‚Å“h‚è‚Â‚Ô‚·B
+		// ï¿½Sï¿½Ì‚ï¿½ï¿½wï¿½iï¿½Fï¿½Å“hï¿½ï¿½ï¿½Â‚Ô‚ï¿½ï¿½B
 		g.clearRect(0, 0, width, height);
 
-		 // ˆê’UA•Ê‚Ì‰æ‘œiƒIƒtƒXƒNƒŠ[ƒ“j‚É‘‚«‚Ş
-		int i, j;
-		for (i = 0; i < field.xSize; i++) {
-			for (j = 0; j < field.ySize; j++) {
-				g.setColor(field.getColor(i, j));
-				g.fillRect(i * block, j * block, block, block);
+		if ( mode == MODE.GAME || mode == MODE.END ) {
+			int i, j;
+			for (i = 0; i < field.xSize; i++) {
+				for (j = 0; j < field.ySize; j++) {
+					g.setColor(field.getColor(i, j));
+					g.fillRect(i * block, j * block, block, block);
+				}
 			}
+			g.setFont(font);
+			g.setColor(Color.GREEN.darker());
+			g.drawString(message, 2 * block, block * (field.ySize+3));
+			g.drawString(pointmes, 2 * block, block * (field.ySize+6));
+			g.setColor(Color.RED.darker());
+			g.drawString("Left:  A(L), S(D), D(U), F(R), W(JUMP)", 2 * block, block * (field.ySize + 9));
+			g.setColor(Color.BLUE.darker());
+			g.drawString("Right: H(L), J(D), K(U), L(R), O(JUMP)", 2 * block, block * (field.ySize + 12));
+		} else if ( mode == MODE.TITLE ) {
+			g.setFont(font);
+			g.setColor(Color.GREEN.darker());
+			g.drawString("Tour De Aji", (field.xSize / 2) * block - 32, block * (field.ySize / 2));
+			g.drawString("Push any button!", (field.xSize / 2) * block - 32, block * (field.ySize / 2) + 12);
 		}
-		g.setFont(font);
-		g.setColor(Color.GREEN.darker());
-		g.drawString(message, 2 * block, block * (field.ySize+3));
-		g.drawString(pointmes, 2 * block, block * (field.ySize+6));
-		g.setColor(Color.RED.darker());
-		g.drawString("Left:  A(L), S(D), D(U), F(R), W(JUMP)", 2 * block, block * (field.ySize + 9));
-		g.setColor(Color.BLUE.darker());
-		g.drawString("Right: H(L), J(D), K(U), L(R), O(JUMP)", 2 * block, block * (field.ySize + 12));
 	}
 
 	public void run() {
+		AudioClip clip;
 		Thread thisThread = Thread.currentThread();
+		//ï¿½ï¿½ï¿½Ì•Ó‚ÅƒLï¿½[ï¿½ï¿½ï¿½Í”ï¿½ï¿½ï¿½ï¿½Å”ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½éƒ‹ï¿½[ï¿½vï¿½ï¿½OPï¿½`ï¿½ï¿½
+
+
 		while (thisThread == thread) {
 			initialize();
-			if ( gameset ) {
+			clip = Applet.newAudioClip(getClass().getResource("test.wav"));
+		    clip.loop();
+			requestFocus();
+			if ( gameset && mode == MODE.GAME ) {
 				countR = 0;
 				countL = 0;
 				gameset = false;
 				message = "Game started!";
 				repaint();
 			}
-			requestFocus();
-			while (p1.state != State.DEAD && p2.state != State.DEAD) {
+
+			while (mode == MODE.GAME && p1.state != State.DEAD && p2.state != State.DEAD) {
 				int i;
 				p1.update();
 				p2.update();
@@ -260,10 +300,12 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 				if (p1.state == State.DEAD) {
 					if (p2.state == State.DEAD) {
 						message = "Draw!";
+						clip.stop();
 					} else {
 						countR++;
 						if ( countR >= matchP ) {
 							message = "Gameset! R won!";
+							mode = MODE.END;
 							gameset = true;
 						} else {
 							message = "R won!";
@@ -273,6 +315,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 					countL++;
 					if ( countL >= matchP ) {
 						message = "Gameset L won!";
+						mode = MODE.END;
 						gameset = true;
 					} else {
 						message = "L won!";
@@ -307,16 +350,16 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 	}
 
 	public void keyReleased(KeyEvent e) {}
-	public void keyTyped(KeyEvent e) {}
+	public void keyTyped(KeyEvent e) { if ( mode == MODE.TITLE || mode == MODE.END ) { mode = MODE.GAME; } }
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
-			/* ƒ^ƒCƒgƒ‹ƒo[‚É•\¦‚·‚é•¶š—ñ‚ğw’è‚Å‚«‚é */
-			JFrame frame = new JFrame("‰¼‘è");	// Œˆ‚ß‚Ä‚­‚¾‚³‚¢
+			/* ã‚¿ã‚¤ãƒˆãƒ«ãƒãƒ¼ã«è¡¨ç¤ºã™ã‚‹æ–‡å­—åˆ—ã‚’æŒ‡å®šã§ãã‚‹ */
+			JFrame frame = new JFrame("Tour De Aji");	// æ±ºã‚ã¦ãã ã•ã„
 			frame.add(new Oct31());
 			frame.pack();
 			frame.setVisible(true);
-			/* ~ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚Æ‚«‚Ì“®ì‚ğw’è‚·‚é */
+			/* ï¿½~ï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½Ì“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½wï¿½è‚·ï¿½ï¿½ */
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		});
 	}
