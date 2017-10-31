@@ -29,6 +29,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 	public enum MODE {
 		TITLE,
 		GAME,
+		END,
 		THREE,	// アニメーション用
 		TWO,
 		ONE;
@@ -148,10 +149,9 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 	private Font font;
 
 	private int width, height;
-	private int countR, countL;
+	private int countR, countL;	// 得点
 	private boolean gameset;	// ゲームセット判定
-	private boolean pause;	// ゲーム開始前のポーズ
-	private MODE mode;
+	private MODE mode;				// モード
 
 	private void initialize() {
     field.init();
@@ -165,7 +165,6 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
     block = 4;
     field = new Field(80, 80);
 		gameset = true;
-		pause = true;
 		pointmes = "0 vs 0";
 		mode = MODE.TITLE;
 		font = new Font("Monospaced", Font.PLAIN, 12);
@@ -195,7 +194,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 		// 全体を背景色で塗りつぶす。
 		g.clearRect(0, 0, width, height);
 
-		if ( mode == MODE.GAME ) {
+		if ( mode == MODE.GAME || mode == MODE.END ) {
 			int i, j;
 			for (i = 0; i < field.xSize; i++) {
 				for (j = 0; j < field.ySize; j++) {
@@ -214,8 +213,8 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 		} else if ( mode == MODE.TITLE ) {
 			g.setFont(font);
 			g.setColor(Color.GREEN.darker());
-			g.drawString("仮題", (field.xSize / 2) * block, block * (field.ySize / 2));
-			g.drawString("Push any button!", (field.xSize / 2) * block, block * (field.ySize / 2) + 12);
+			g.drawString("Tour De Aji", (field.xSize / 2) * block - 32, block * (field.ySize / 2));
+			g.drawString("Push any button!", (field.xSize / 2) * block - 32, block * (field.ySize / 2) + 12);
 		}
 	}
 
@@ -224,7 +223,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 		while (thisThread == thread) {
 			initialize();
 			requestFocus();
-			if ( gameset ) {
+			if ( gameset && mode == MODE.GAME ) {
 				countR = 0;
 				countL = 0;
 				gameset = false;
@@ -269,6 +268,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 						countR++;
 						if ( countR >= matchP ) {
 							message = "Gameset! R won!";
+							mode = MODE.END;
 							gameset = true;
 						} else {
 							message = "R won!";
@@ -278,6 +278,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 					countL++;
 					if ( countL >= matchP ) {
 						message = "Gameset L won!";
+						mode = MODE.END;
 						gameset = true;
 					} else {
 						message = "L won!";
@@ -312,12 +313,12 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 	}
 
 	public void keyReleased(KeyEvent e) {}
-	public void keyTyped(KeyEvent e) { mode = MODE.GAME; }
+	public void keyTyped(KeyEvent e) { if ( mode == MODE.TITLE || mode == MODE.END ) { mode = MODE.GAME; } }
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
 			/* タイトルバーに表示する文字列を指定できる */
-			JFrame frame = new JFrame("仮題");	// 決めてください
+			JFrame frame = new JFrame("Tour De Aji");	// 決めてください
 			frame.add(new Oct31());
 			frame.pack();
 			frame.setVisible(true);
