@@ -143,7 +143,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
         y = (int)(Math.random() * (ySize-m))+1;
         for(i = 0; i < m; i++) {
           for(j = 0; j < m; j++) {
-            this.map[i+x][j+y] = Color.BLACK;
+            this.map[i+x][j+y] = Color.GRAY;
           }
         }
       }
@@ -278,8 +278,8 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 					} else if ( p1.state == State.JUMP && field.map[p1.x][p1.y] == Color.BLACK ) {
 						p1.setState(State.DEAD);
 					} else {
-						field.setColor(p1.px, p1.py, Color.RED);
-						field.setColor(p1.x, p1.y, Color.ORANGE);
+						field.setColor(p1.px, p1.py, Color.ORANGE);
+						field.setColor(p1.x, p1.y, Color.RED);
 					}
 				}
 				for ( i=0; p2.state!=State.DEAD&&i<p2.speed; i++ ) {
@@ -293,8 +293,8 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 					} else if ( p2.state == State.JUMP && field.map[p2.x][p2.y] == Color.BLACK ) {
 						p2.setState(State.DEAD);
 					} else {
-						field.setColor(p2.px, p2.py, Color.BLUE);
-						field.setColor(p2.x, p2.y, Color.CYAN);
+						field.setColor(p2.px, p2.py, Color.CYAN);
+						field.setColor(p2.x, p2.y, Color.BLUE);
 					}
 				}
 				if (p1.state == State.DEAD) {
