@@ -22,12 +22,13 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
   private static final int JCOUNT = 5;	// �؋󎞊�
 	private static final int matchP = 3;	// �Z�b�g�|�C���g
 
-  public enum State { // ����
+  public enum State { // ���
     DEAD,							// �Փ�
     ALIVE,						// �ʏ�
     JUMP;							// �W�����v
   }
-  public enum Dir { // ����
+  public enum Dir { // ���
+
     N,
     E,
     W,
@@ -42,6 +43,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 		ONE;
 	}
 
+
   class Point {	// �g���ɂ����̂Ŏg���Ă܂���
     public int x;
     public int y;
@@ -52,24 +54,24 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
   }
 
   class Bike {	// ���@
-    private State state;	// ����
-    public Dir dir;				// ����
+    private State state;	// ���
+    public Dir dir;				// ���
     protected String jiki;	// �_�~�[�ł�
-    protected int px, py; // �O�̍��W
-    protected int x, y;		// ���W
+    protected int px, py; // �O�̍�W
+    protected int x, y;		// ��W
     private int jumpcount;	// �؋󎞊�
     private int speed;		// �X�s�[�h(�قڃ_�~�[)
 
-    State getState() {	// ���Ԃ��擾
+    State getState() {	// ��Ԃ�擾
       return this.state;
     }
-    void setState(State s) {	// ���Ԃ��Z�b�g
+    void setState(State s) {	// ��Ԃ�Z�b�g
       this.state = s;
     }
     void jump() {	// �W�����v
-      if ( this.state != State.ALIVE ) { return; }	// �ʏ����ԈȊO�ł͉������Ȃ�
+      if ( this.state != State.ALIVE ) { return; }	// �ʏ��ԈȊO�ł͉����Ȃ�
 			this.state = State.JUMP;	// �W�����v����
-      this.jumpcount = JCOUNT;	// �؋󎞊Ԃ��Z�b�g
+      this.jumpcount = JCOUNT;	// �؋󎞊Ԃ�Z�b�g
     }
     void update() {	// �؋󎞊Ԃ̌���
       if ( this.state == State.JUMP ) {
@@ -79,6 +81,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
         }
       }
     }
+
     void move() {	// �ړ�
 			if ( this.state == State.ALIVE ) {	// �y�C���g�p
       	this.py = this.y; this.px = this.x;
@@ -121,8 +124,11 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
     protected Color map[][];	// �F
     protected int xSize, ySize;	// �T�C�Y
 
-    void init() {	// ������
-      int i, j;
+    void init() {	// ����
+      int i, j, k;
+      int x, y;	   //��Q���̍�W
+      int n = 10;	//��Q���̐�
+      int m = 3;	//��Q���̑傫��
       for ( j=0; j<ySize; j++ ) {
         this.map[0][j] = map[xSize-1][j] = Color.BLACK;
       }
@@ -132,6 +138,15 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
           this.map[i][j] = Color.WHITE;
         }
       }
+      for( k = 0; k < n; k++) {
+      	x = (int)(Math.random() * (xSize-m))+1;
+        y = (int)(Math.random() * (ySize-m))+1;
+        for(i = 0; i < m; i++) {
+          for(j = 0; j < m; j++) {
+            this.map[i+x][j+y] = Color.BLACK;
+          }
+        }
+      }
     }
 		void setColor(int x, int y, Color c) {
 			this.map[x][y] = c;
@@ -139,6 +154,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 		Color getColor(int x, int y) {
 			return map[x][y];
 		}
+
     Field(int x, int y) {	// �R���X�g���N�^
       this.xSize = x;
       this.ySize = y;
