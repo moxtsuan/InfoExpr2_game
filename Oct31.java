@@ -135,7 +135,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
       for ( i=1; i<xSize-1; i++ ) {
         this.map[i][0] = map[i][ySize-1] = Color.BLACK;
         for ( j=1; j<ySize-1; j++ ) {
-          this.map[i][j] = Color.WHITE;
+          this.map[i][j] = Color.LIGHT_GRAY;
         }
       }
       for( k = 0; k < n; k++) {
@@ -273,7 +273,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 				p2.update();
 				for ( i=0; p1.state!=State.DEAD&&i<p1.speed; i++ ) {
 					p1.move();
-					if ( p1.state == State.ALIVE && field.map[p1.x][p1.y] != Color.WHITE ) {
+					if ( p1.state == State.ALIVE && field.map[p1.x][p1.y] != Color.LIGHT_GRAY ) {
 						p1.setState(State.DEAD);
 					} else if ( p1.state == State.JUMP && field.map[p1.x][p1.y] == Color.BLACK ) {
 						p1.setState(State.DEAD);
@@ -284,7 +284,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 				}
 				for ( i=0; p2.state!=State.DEAD&&i<p2.speed; i++ ) {
 					p2.move();
-				if ( p2.state == State.ALIVE && field.map[p2.x][p2.y] != Color.WHITE) {
+				if ( p2.state == State.ALIVE && field.map[p2.x][p2.y] != Color.LIGHT_GRAY) {
 						p2.state = State.DEAD;
 						if(p1.x == p2.x && p1.y == p2.y) {
 							p1.setState(State.DEAD);
