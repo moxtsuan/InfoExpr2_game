@@ -9,18 +9,25 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+import java.applet.*;
+import java.net.*;
+
 public class Oct31 extends JPanel implements Runnable, KeyListener {
 	private static final long serialVersionUID = 1L;
 
-  private static final int JCOUNT = 5;	// æ»ç©ºæ™‚é–“
-	private static final int matchP = 3;	// ã‚»ãƒƒãƒˆãƒã‚¤ãƒ³ãƒˆ
+  private static final int JCOUNT = 5;	// ‘Ø‹óŠÔ
+	private static final int matchP = 3;	// ƒZƒbƒgƒ|ƒCƒ“ƒg
 
-  public enum State { // çŠ¶æ…‹
-    DEAD,							// è¡çª
-    ALIVE,						// é€šå¸¸
-    JUMP;							// ã‚¸ãƒ£ãƒ³ãƒ—
+  public enum State { // ó‘Ô
+    DEAD,							// Õ“Ë
+    ALIVE,						// ’Êí
+    JUMP;							// ƒWƒƒƒ“ƒv
   }
-  public enum Dir { // æ–¹å‘
+  public enum Dir { // •ûŒü
     N,
     E,
     W,
@@ -35,7 +42,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 		ONE;
 	}
 
-  class Point {	// ä½¿ã„ã«ãã„ã®ã§ä½¿ã£ã¦ã¾ã›ã‚“
+  class Point {	// g‚¢‚É‚­‚¢‚Ì‚Åg‚Á‚Ä‚Ü‚¹‚ñ
     public int x;
     public int y;
     private void Point(int ix, int iy) {
@@ -44,27 +51,27 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
     }
   }
 
-  class Bike {	// è‡ªæ©Ÿ
-    private State state;	// çŠ¶æ…‹
-    public Dir dir;				// æ–¹å‘
-    protected String jiki;	// ãƒ€ãƒŸãƒ¼ã§ã™
-    protected int px, py; // å‰ã®åº§æ¨™
-    protected int x, y;		// åº§æ¨™
-    private int jumpcount;	// æ»ç©ºæ™‚é–“
-    private int speed;		// ã‚¹ãƒ”ãƒ¼ãƒ‰(ã»ã¼ãƒ€ãƒŸãƒ¼)
+  class Bike {	// ©‹@
+    private State state;	// ó‘Ô
+    public Dir dir;				// •ûŒü
+    protected String jiki;	// ƒ_ƒ~[‚Å‚·
+    protected int px, py; // ‘O‚ÌÀ•W
+    protected int x, y;		// À•W
+    private int jumpcount;	// ‘Ø‹óŠÔ
+    private int speed;		// ƒXƒs[ƒh(‚Ù‚Úƒ_ƒ~[)
 
-    State getState() {	// çŠ¶æ…‹ã‚’å–å¾—
+    State getState() {	// ó‘Ô‚ğæ“¾
       return this.state;
     }
-    void setState(State s) {	// çŠ¶æ…‹ã‚’ã‚»ãƒƒãƒˆ
+    void setState(State s) {	// ó‘Ô‚ğƒZƒbƒg
       this.state = s;
     }
-    void jump() {	// ã‚¸ãƒ£ãƒ³ãƒ—
-      if ( this.state != State.ALIVE ) { return; }	// é€šå¸¸çŠ¶æ…‹ä»¥å¤–ã§ã¯ä½•ã‚‚ã—ãªã„
-			this.state = State.JUMP;	// ã‚¸ãƒ£ãƒ³ãƒ—ã™ã‚‹
-      this.jumpcount = JCOUNT;	// æ»ç©ºæ™‚é–“ã‚’ã‚»ãƒƒãƒˆ
+    void jump() {	// ƒWƒƒƒ“ƒv
+      if ( this.state != State.ALIVE ) { return; }	// ’Êíó‘ÔˆÈŠO‚Å‚Í‰½‚à‚µ‚È‚¢
+			this.state = State.JUMP;	// ƒWƒƒƒ“ƒv‚·‚é
+      this.jumpcount = JCOUNT;	// ‘Ø‹óŠÔ‚ğƒZƒbƒg
     }
-    void update() {	// æ»ç©ºæ™‚é–“ã®æ¸›å°‘
+    void update() {	// ‘Ø‹óŠÔ‚ÌŒ¸­
       if ( this.state == State.JUMP ) {
         this.jumpcount--;
         if ( this.jumpcount <= 0 ) {
@@ -72,8 +79,8 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
         }
       }
     }
-    void move() {	// ç§»å‹•
-			if ( this.state == State.ALIVE ) {	// ãƒšã‚¤ãƒ³ãƒˆç”¨
+    void move() {	// ˆÚ“®
+			if ( this.state == State.ALIVE ) {	// ƒyƒCƒ“ƒg—p
       	this.py = this.y; this.px = this.x;
 			}
       switch ( this.dir ) {
@@ -94,7 +101,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 		void brake() {
 			this.speed = 0;
 		}
-    Bike(int ix, int iy, int p) {	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+    Bike(int ix, int iy, int p) {	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
       this.state = State.ALIVE;
       this.x = ix;  this.px = this.x;
       this.y = iy;	this.py = this.y;
@@ -110,11 +117,11 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
     }
   }
 
-  class Field {	// ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰
-    protected Color map[][];	// è‰²
-    protected int xSize, ySize;	// ã‚µã‚¤ã‚º
+  class Field {	// ƒtƒB[ƒ‹ƒh
+    protected Color map[][];	// F
+    protected int xSize, ySize;	// ƒTƒCƒY
 
-    void init() {	// åˆæœŸåŒ–
+    void init() {	// ‰Šú‰»
       int i, j;
       for ( j=0; j<ySize; j++ ) {
         this.map[0][j] = map[xSize-1][j] = Color.BLACK;
@@ -132,7 +139,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 		Color getColor(int x, int y) {
 			return map[x][y];
 		}
-    Field(int x, int y) {	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+    Field(int x, int y) {	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
       this.xSize = x;
       this.ySize = y;
       this.map = new Color[x][y];
@@ -149,9 +156,14 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 	private Font font;
 
 	private int width, height;
+<<<<<<< HEAD
+	private int countR, countL;
+	private boolean gameset;	// ƒQ[ƒ€ƒZƒbƒg”»’è
+=======
 	private int countR, countL;	// å¾—ç‚¹
 	private boolean gameset;	// ã‚²ãƒ¼ãƒ ã‚»ãƒƒãƒˆåˆ¤å®š
 	private MODE mode;				// ãƒ¢ãƒ¼ãƒ‰
+>>>>>>> 72ef1b0c43a48f4df712fbc9aecd4538f62befdd
 
 	private void initialize() {
     field.init();
@@ -160,6 +172,8 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 	}
 
 	public Oct31() {
+		
+		
 		setPreferredSize(new Dimension(320, 380));
 
     block = 4;
@@ -173,7 +187,11 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 		Dimension size = getPreferredSize();
 		width = size.width; height = size.height;
 
+		//‚±‚Ì•Ó‚ÉOP•`‰æ
+		
 		startThread();
+		
+			
 	}
 
 	public void startThread() {
@@ -191,9 +209,17 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 
 	@Override
 	public void paintComponent(Graphics g) {
-		// å…¨ä½“ã‚’èƒŒæ™¯è‰²ã§å¡—ã‚Šã¤ã¶ã™ã€‚
+		// ‘S‘Ì‚ğ”wŒiF‚Å“h‚è‚Â‚Ô‚·B
 		g.clearRect(0, 0, width, height);
 
+<<<<<<< HEAD
+		 // ˆê’UA•Ê‚Ì‰æ‘œiƒIƒtƒXƒNƒŠ[ƒ“j‚É‘‚«‚Ş
+		int i, j;
+		for (i = 0; i < field.xSize; i++) {
+			for (j = 0; j < field.ySize; j++) {
+				g.setColor(field.getColor(i, j));
+				g.fillRect(i * block, j * block, block, block);
+=======
 		if ( mode == MODE.GAME || mode == MODE.END ) {
 			int i, j;
 			for (i = 0; i < field.xSize; i++) {
@@ -201,6 +227,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 					g.setColor(field.getColor(i, j));
 					g.fillRect(i * block, j * block, block, block);
 				}
+>>>>>>> 72ef1b0c43a48f4df712fbc9aecd4538f62befdd
 			}
 			g.setFont(font);
 			g.setColor(Color.GREEN.darker());
@@ -219,11 +246,21 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 	}
 
 	public void run() {
+		AudioClip clip;
 		Thread thisThread = Thread.currentThread();
+		//‚±‚Ì•Ó‚ÅƒL[“ü—Í”»’è‚Å”²‚¯o‚¹‚éƒ‹[ƒv‚ÅOP•`‰æ
+		
+		
 		while (thisThread == thread) {
 			initialize();
+<<<<<<< HEAD
+			clip = Applet.newAudioClip(getClass().getResource("test.wav"));
+		    clip.loop();
+			if ( gameset ) {
+=======
 			requestFocus();
 			if ( gameset && mode == MODE.GAME ) {
+>>>>>>> 72ef1b0c43a48f4df712fbc9aecd4538f62befdd
 				countR = 0;
 				countL = 0;
 				gameset = false;
@@ -264,6 +301,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 				if (p1.state == State.DEAD) {
 					if (p2.state == State.DEAD) {
 						message = "Draw!";
+						clip.stop();
 					} else {
 						countR++;
 						if ( countR >= matchP ) {
@@ -317,12 +355,17 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
+<<<<<<< HEAD
+			/* ƒ^ƒCƒgƒ‹ƒo[‚É•\¦‚·‚é•¶š—ñ‚ğw’è‚Å‚«‚é */
+			JFrame frame = new JFrame("‰¼‘è");	// Œˆ‚ß‚Ä‚­‚¾‚³‚¢
+=======
 			/* ã‚¿ã‚¤ãƒˆãƒ«ãƒãƒ¼ã«è¡¨ç¤ºã™ã‚‹æ–‡å­—åˆ—ã‚’æŒ‡å®šã§ãã‚‹ */
 			JFrame frame = new JFrame("Tour De Aji");	// æ±ºã‚ã¦ãã ã•ã„
+>>>>>>> 72ef1b0c43a48f4df712fbc9aecd4538f62befdd
 			frame.add(new Oct31());
 			frame.pack();
 			frame.setVisible(true);
-			/* Ã—ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸã¨ãã®å‹•ä½œã‚’æŒ‡å®šã™ã‚‹ */
+			/* ~ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚Æ‚«‚Ì“®ì‚ğw’è‚·‚é */
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		});
 	}
