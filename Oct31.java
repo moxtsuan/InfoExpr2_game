@@ -176,6 +176,8 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
   private boolean gameset;      // ゲームセット判定
   private MODE mode;            // モード
 
+  private AudioClip clip;       // 音声ファイル
+
   private void initialize() {
     field.init();
     p1 = new Bike(2, 2, 1);
@@ -245,14 +247,13 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
   }
 
   public void run() {
-    AudioClip clip;
     Thread thisThread = Thread.currentThread();
+
+    clip = Applet.newAudioClip(getClass().getResource("test.wav"));
 
 
     while (thisThread == thread) {
       initialize();
-      clip = Applet.newAudioClip(getClass().getResource("test.wav"));
-      clip.loop();
       requestFocus();
       if ( gameset && mode == MODE.GAME ) {
         countR = 0;
@@ -261,6 +262,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
         message = "Game started!";
         repaint();
       }
+      clip.loop();
 
       while (mode == MODE.GAME && p1.state != State.DEAD && p2.state != State.DEAD) {
         int i;
@@ -293,9 +295,9 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
           }
         }
         if (p1.state == State.DEAD) {
+          clip.stop();
           if (p2.state == State.DEAD) {
             message = "Draw!";
-            clip.stop();
           } else {
             countR++;
             if ( countR >= matchP ) {
@@ -307,6 +309,7 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
             }
           }
         } else if (p2.state == State.DEAD) {
+          clip.stop();
           countL++;
           if ( countL >= matchP ) {
             message = "Gameset L won!";
