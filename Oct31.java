@@ -262,7 +262,9 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
         message = "Game started!";
         repaint();
       }
-      clip.loop();
+      if ( mode == MODE.GAME ) {
+        clip.loop();
+      }
 
       while (mode == MODE.GAME && p1.state != State.DEAD && p2.state != State.DEAD) {
         int i;
