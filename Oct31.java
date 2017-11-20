@@ -177,6 +177,8 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
   private MODE mode;            // モード
 
   private AudioClip clip;       // 音声ファイル
+  private AudioClip lose;
+  private AudioClip won;
 
   private void initialize() {
     field.init();
@@ -250,7 +252,8 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
     Thread thisThread = Thread.currentThread();
 
     clip = Applet.newAudioClip(getClass().getResource("test.wav"));
-
+    lose = Applet.newAudioClip(getClass().getResource("end.wav"));
+    won = Applet.newAudioClip(getClass().getResource("won.wav"));
 
     while (thisThread == thread) {
       initialize();
@@ -309,6 +312,12 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
             } else {
               message = "R won!";
             }
+            try{
+              lose.play();
+              pointmes = String.valueOf(countR) + " vs " + String.valueOf(countL);
+              repaint();
+              Thread.sleep(5000);
+            } catch(InterruptedException e) {}
           }
         } else if (p2.state == State.DEAD) {
           clip.stop();
@@ -320,6 +329,12 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
           } else {
             message = "L won!";
           }
+          try{
+            won.play();
+            pointmes = String.valueOf(countR) + " vs " + String.valueOf(countL);
+            repaint();
+            Thread.sleep(5000);
+          } catch(InterruptedException e) {}
         }
         pointmes = String.valueOf(countR) + " vs " + String.valueOf(countL);
         repaint();
