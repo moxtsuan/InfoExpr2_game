@@ -138,8 +138,8 @@ public class Oct31 extends JPanel implements Runnable, KeyListener {
         }
       }
       for( k = 0; k < n; k++) {
-        x = (int)(Math.random() * (xSize-m))+1;
-        y = (int)(Math.random() * (ySize-m))+1;
+        x = (int)(Math.random() * (xSize-m-2))+1;
+        y = (int)(Math.random() * (ySize-m-2))+1;
         for(i = 0; i < m; i++) {
           for(j = 0; j < m; j++) {
             this.map[i+x][j+y] = Color.GRAY;
